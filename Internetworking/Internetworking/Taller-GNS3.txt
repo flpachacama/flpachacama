@@ -1,0 +1,83 @@
+--------------------S1---------------
+config t
+
+vlan 100
+ name TI
+vlan 200
+ name SEGURIDAD
+
+int range e1/0 -3
+ switchport mode access
+ switchport access vlan 100
+int range e2/0 -3
+ switchport mode access
+ switchport access vlan 200
+
+int e0/0
+ switchport trunk encap dot1q 
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+do wr 
+-------------------R1-------------------
+config t
+
+int e0/0.100
+ encap dot1q 100
+ ip add 10.10.100.1 255.255.255.128
+ ip helper-add 172.16.10.2
+int e0/0.200
+ encap dot1q 200
+ ip add 10.10.200.1 255.255.252.224
+ ip helper-add 172.16.10.2
+
+int e0/0.77
+ encap dot1q 77 native
+int e0/0
+ no shut
+
+int s4/0
+ ip add 172.16.10.1 255.255.255.252
+ no shut
+
+router eigrp 500
+ eigrp router-id 1.1.1.1
+ network 10.10.100.0 0.0.0.127
+ network 10.10.200.0 0.0.0.31
+ passive-int e0/0.100
+ passive-int e0/0.200
+ no auto summary
+do wr
+---------------------------------------
+R2
+config t
+
+int s4/0
+ ip add 172.16.10.2 255.255.255.252
+ no shut
+int s4/1
+ ip add 5.5.5.1 255.255.255.252
+ no shut
+
+router eigrp 500
+ eigrp router-id 2.2.2.2
+ network 172.16.10.0 0.0.0.3
+ no auto summary
+
+router bgp 500
+ bgp router-id 3.3.3.3
+ neighbor 5.5.5.2 remote-as 1000
+ network 5.5.5.0 mask 255.255.255.252
+
+ip dhcp excluded-address 10.10.100.1 10.10.100.3
+ip dhcp excluded-address 10.10.200.1 10.10.200.3
+
+
+ip dhcp pool V100
+ network 10.10.100.0 255.255.255.128
+ default-router 10.10.100.1
+ dns-server 8.8.8.8
+ip dhcp pool V200
+ network 10.10.200.0 255.255.255.224
+ default-router 10.10.200.1
+do wr

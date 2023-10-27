@@ -1,0 +1,161 @@
+---------------------------------
+S1
+enable
+config t
+hostname S1
+
+vlan 77
+ name PRESIDENCIA
+vlan 99
+ name SECRETARIA
+exit
+
+int range fa0/10 -17
+ switchport mode access
+ switchport access vlan 77
+int range f0/18 -24
+ switchport mode access
+ switchport access vlan 99
+
+int range fa0/1, fa0/5
+ shut
+ channel-group 3 mode desirable
+ shut
+
+int Po3
+ switchport mode trunk
+ switchport trunk native vlan 55
+do wr
+---------------------------------
+S2
+enable
+config t
+hostname S2
+
+vlan 77
+ name PRESIDENCIA
+vlan 99
+ name SECRETARIA
+exit
+
+int range fa0/1, fa0/5
+ channel-group 3 mode auto
+
+int Po3
+ switchport mode trunk
+ switchport trunk native vlan 55
+
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 55
+
+do wr
+-------------------R1-------------------
+enable
+config t
+hostname R1-CPS
+
+int g0/0/1.77
+ encap dot1q 77
+ ip add 192.168.4.1 255.255.255.128
+int g0/0/1.99
+ encap dot1q 99
+ ip add 192.168.0.1 255.255.252.0
+
+int g0/0/1.55
+ encap dot1q 55 native
+int g0/0/1
+ no shut
+
+int g0/0/0
+ ip add 192.168.4.129 255.255.255.252
+ no shut
+
+router eigrp 797
+ eigrp router-id 1.1.1.1
+ network 192.168.4.0 0.0.0.127
+ network 192.168.0.0 0.0.3.255
+ network 192.168.4.128 0.0.0.3
+ passive-int g0/0/1.77
+ passive-int g0/0/1.99
+ no auto summary
+do wr
+int g0/0/1.77
+ ip helper-add 192.168.4.138
+int g0/0/1.99
+ ip helper-add 192.168.4.138
+do wr
+---------------------------------------
+R2
+enable
+config t
+hostname R2
+
+int g0/0/1
+ ip add 192.168.4.133 255.255.255.252
+ no shut
+int g0/0/0
+ ip add 192.168.4.130 255.255.255.252
+ no shut
+
+router eigrp 797
+ eigrp router-id 2.2.2.2
+ network 192.168.4.132 0.0.0.3
+ network 192.168.4.128 0.0.0.3
+ no auto summary
+do wr
+---------------------------------------
+R3
+enable
+config t
+hostname R3
+
+int g0/0/1
+ ip add 192.168.4.134 255.255.255.252
+ no shut
+int g0/0/0
+ ip add 192.168.4.137 255.255.255.252
+ no shut
+
+router eigrp 797
+ eigrp router-id 3.3.3.3
+ network 192.168.4.132 0.0.0.3
+ network 192.168.4.136 0.0.0.3
+ no auto summary
+do wr
+---------------------------------------
+R4
+enable
+config t
+hostname R4
+
+int s0/1/0
+ ip add 210.10.10.1 255.255.255.252
+ clock rate 4000000
+ no shut
+int g0/0/0
+ ip add 192.168.4.138 255.255.255.252
+ no shut
+
+router eigrp 797
+ eigrp router-id 4.4.4.4
+ network 192.168.4.136 0.0.0.3
+ no auto summary
+
+router bgp 7799
+bgp router-id 5.5.5.5
+ neighbor 210.10.10.2 remote-as 888
+ network 210.10.10.0 mask 255.255.255.252
+
+ip dhcp excluded-address 192.168.4.1 192.168.4.5
+ip dhcp excluded-address 192.168.0.1 192.168.0.5
+
+
+ip dhcp pool V77
+ network 192.168.4.0 255.255.255.128
+ default-router 192.168.4.1
+ dns-server 8.8.8.8
+ip dhcp pool V99
+ network 192.168.0.0 255.255.252.0
+ default-router 192.168.0.1
+do wr

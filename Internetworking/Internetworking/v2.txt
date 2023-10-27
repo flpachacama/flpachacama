@@ -1,0 +1,255 @@
+----------------S1--------------------
+enable
+config t
+hostname S1
+
+vlan 100
+ name GERENCIA
+exit 
+
+int range fa0/10 -19
+ switchport mode access
+ switchport access vlan 100
+
+int range f0/1, f0/2, f0/3
+ shut
+ channel-group 1 mode active
+
+int Po1
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+do wr
+----------------S2--------------------
+enable
+config t
+hostname S2
+
+vlan 100
+ name GERENCIA
+vlan 200
+ name VENTAS
+exit 
+
+int range fa0/10 -19
+ switchport mode access
+ switchport access vlan 100
+
+int range fa0/20 -24
+ switchport mode access
+ switchport access vlan 200
+
+int range f0/1, f0/2, f0/3
+ shut
+ channel-group 1 mode passive
+
+int Po1
+ switchport mode trunk
+ switchport trunk native vlan 999
+
+do wr
+
+int range fa0/1, fa0/2, fa0/3
+no shut
+----------------Router1------------------
+enable
+config t
+hostname R1
+
+int g0/0/1.100
+ encap dot1q 100
+ ip add 192.168.100.1 255.255.255.224
+int g0/0/1.200
+ encap dot1q 200
+ ip add 192.168.200.1 255.255.255.192
+int g0/0/1.77
+ encap dot1q 77 native
+int g0/0/1
+ no shut
+
+int s0/1/0
+ ip add 10.10.10.1 255.255.255.252
+ clock rate 4000000
+ no shut
+----------------Router2------------------
+enable
+config t
+hostname R2
+
+int g0/0/0
+ip add 10.10.10.5 255.255.255.252
+no shut
+int s0/1/0
+ip add 10.10.10.2 255.255.255.252
+no shut
+
+do wr
+----------------Router3------------------
+enable
+config t
+hostname R3
+
+int g0/0/0
+ip add 10.10.10.6 255.255.255.252
+no shut
+int g0/0/1
+ip add 10.10.10.9 255.255.255.252
+no shut
+
+do wr
+----------------Router4------------------
+enable
+config t
+hostname R4
+
+int g0/0/1
+ip add 10.10.10.10 255.255.255.252
+no shut
+int s0/1/0
+ip add 10.10.10.13 255.255.255.252
+clock rate 4000000
+no shut
+
+do wr
+----------------Router5------------------
+enable
+config t
+hostname R5
+
+
+int g0/0/1
+ ip add 8.8.8.1 255.255.255.0
+ no shut
+int g0/0/0
+ ip add 192.168.50.10 255.255.255.0
+ no shut
+int s0/1/0
+ ip add 10.10.10.14 255.255.255.252
+ no shut
+
+do wr
+----------DHCP-----------
+-------R3--------
+enable
+config t
+
+ip dhcp excluded-address 192.68.100.1 192.68.100.3 
+ip dhcp excluded-address 192.168.200.1 192.168.200.3
+ip dhcp excluded-address 192.168.50.1 192.168.50.3
+ip dhcp excluded-address 8.8.8.9 8.8.8.11
+
+ip dhcp pool V100
+ network 192.68.100.0 255.255.255.224
+ default-router 192.68.100.1
+ dns-server 8.8.8.8
+ip dhcp pool V200
+ network 192.168.200.0 255.255.255.192
+ default-router 192.168.200.1
+ dns-server 8.8.8.8
+ip dhcp pool DCEMPRESARIAL
+ network 192.168.50.0 255.255.255.0
+ default-router 192.168.50.1
+ dns-server 8.8.8.8
+ip dhcp pool GOOGLE
+ network 8.8.8.8 255.255.255.240
+ default-router 8.8.8.1
+ dns-server 8.8.8.8
+
+do wr
+---------------R1--------
+enable
+config t
+
+int g0/0/1.100
+ip helper-address 10.10.10.6
+
+int g0/0/1.200
+ip helper-address 10.10.10.6
+
+---------------R5--------
+enable
+config t
+
+int g0/0/0
+ip helper-address 10.10.10.9
+
+int g0/0/1
+ip helper-address 10.10.10.9
+--------------EIGRP------------
+---------------R1--------------
+enable 
+config t
+
+router eigrp 10
+eigrp router-id 1.1.1.1
+network 192.168.100.0 0.0.0.31
+network 10.10.10.0 0.0.0.3
+no auto-summary
+
+do wr
+---------------R2--------------
+enable 
+config t
+
+router eigrp 10
+eigrp router-id 2.2.2.2
+network 10.10.10.0 0.0.0.3
+network 10.10.10.4 0.0.0.3
+no auto-summary
+
+do wr
+---------------R3--------------
+enable 
+config t
+
+router eigrp 10
+eigrp router-id 3.3.3.3
+network 10.10.10.4 0.0.0.3
+network 10.10.10.8 0.0.0.3
+no auto-summary
+
+do wr
+---------------R4--------------
+enable 
+config t
+
+router eigrp 10
+eigrp router-id 4.4.4.4
+network 10.10.10.8 0.0.0.3
+network 10.10.10.12 0.0.0.3
+no auto-summary
+
+do wr
+---------------R5--------------
+enable 
+config t
+
+router eigrp 10
+eigrp router-id 5.5.5.5
+network 10.10.10.12 0.0.0.3
+network 192.168.50.0 0.0.0.255
+no auto-summary
+
+do wr
+----------R por defecto------
+ROUTER 5
+enable
+config t
+
+ip route 0.0.0.0 0.0.0.0 g0/0/1
+route eigrp 10
+redistribute static 
+
+do wr
+-------------------------------
+enable
+config t
+int vlan 100
+ip helper-address 10.10.10.6
+
+int vlan 500
+ip helper-address 10.10.10.6

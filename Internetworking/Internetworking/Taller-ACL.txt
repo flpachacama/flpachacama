@@ -1,0 +1,175 @@
+------------------s1---------------------
+enable
+config t
+hostname S1
+
+vlan 10
+ name GRENCIA
+vlan 20 
+ name VENTAS 
+exit 
+
+int range fa0/10-19
+ switchport mode access
+ switchport access vlan 10
+
+int range fa0/20-24
+ switchport mode access
+ switchport access vlan 20
+
+int range fa0/1, fa0/5
+ shut
+ channel-group 5 mode desirable
+
+int Po5
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+ do wr
+------------------s2---------------------
+enable
+config t
+hostname S2
+
+vlan 10
+ name GRENCIA
+vlan 20 
+ name VENTAS 
+exit 
+
+int range fa0/10-19
+ switchport mode access
+ switchport access vlan 10
+
+int range fa0/20-24
+ switchport mode access
+ switchport access vlan 20
+
+int range fa0/1, fa0/5
+ channel-group 5 mode desirable
+
+int Po5
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+ do wr
+-------------------R1-------------------
+enable
+config t
+hostname R1
+
+int g0/0/1.10
+ encap dot1q 10
+ ip add 172.16.100.1 255.255.255.128
+int g0/0/0.20
+ encap dot1q 20
+ ip add 192.16.10.1 255.255.255.192
+
+int g0/0/1.77
+ encap dot1q 77 native
+int g0/0/1
+ no shut
+
+int g0/0/0
+ ip add 10.10.10.1 255.255.255.252
+ no shut
+
+router eigrp 10
+ eigrp router-id 1.1.1.1
+ network 10.10.10.0 0.0.0.3
+ network 192.169.10.0 0.0.0.127
+ network 172.16.100.0 0.0.0.63
+no auto-summary
+
+do wr
+-------------------R2-------------------
+enable
+config t
+hostname R2
+
+int g0/0/0
+ ip add 10.10.10.2 255.255.255.252
+ no shut
+int g0/0/1
+ ip add 10.10.10.5 255.255.255.252
+ no shut
+
+router eigrp 10
+ eigrp router-id 2.2.2.2
+ network 10.10.10.0 0.0.0.3
+ network 10.10.10.4 0.0.0.3
+no auto-summary
+
+do wr
+-------------------R3-------------------
+enable
+config t
+hostname R3
+
+int g0/0/1
+ ip add 10.10.10.6 255.255.255.252
+ no shut
+int g0/0/0
+ ip add 7.7.7.1 255.255.255.252
+ no shut
+
+router eigrp 10
+ eigrp router-id 3.3.3.3
+ network 10.10.10.4 0.0.0.3
+no auto-summary
+redistribute static
+do wr
+
+router bgp 65000
+ bgp router-id 3.3.3.3
+ neighbor 7.7.7.2 remote-as 65010
+ network 172.16.100.0 mask 255.255.255.192
+ network 192.168.10.0 mask 255.255.255.128
+ network 7.7.7.0 mask 255.255.255.252
+
+ip route 0.0.0.0 0.0.0.0 7.7.7.2
+do wr
+-------------------ISP-------------------
+enable
+config t
+hostname ISP
+
+int g0/0/0
+ ip add 7.7.7.2 255.255.255.252
+ no shut
+int g0/0/1
+ ip add 8.8.8.1 255.255.255.252
+
+router bgp 65010
+ bgp router-id 4.4.4.4
+ neighbor 7.7.7.1 remote-as 65000
+ network 8.8.8.0 mask 255.255.255.0
+
+do wr
+----------------DHCP----------------------
+ip dhcp excluded 172.16.100.1 172.16.100.3
+ip dhcp excluded 192.168.10.1 192.168.10.3
+
+ip dhcp pool VENTAS
+network 172.16.100.0 255.255.
+------------------------------------------
+Politica de seguridad
+- La vlan 10 no podra acceder al server por HTTP, tampoco la laptop 1
+- La comunicación entre vlans esta bloqueada menos entre la laptop 1 y la laptop 0
+- La vlan 20 no podra acceder al server por HTTPs
+- Todo lo demás esta permitido 
+
+ACL 
+R1
+access-list 100 deny tcp 172.16.100.4 host 8.8.8.8 eq 80
+access-list 100 deny tcp 192.168.10.0 0.0.0.127 host 8.8.8.8 eq 80
+access-list 100 deny tcp 172.16.100.0 0.0.0.63 host 8.8.8.8 eq 443
+access-list 100 permit ip any any
+
+access-list 101 permit ip host 192.168.10.4 host 172.16.100.4 
+access-list 101 deny ip 192.168.10.0 0.0.0.127 172.16.100.0 0.0.0.63
+access-list 101 permit ip any any

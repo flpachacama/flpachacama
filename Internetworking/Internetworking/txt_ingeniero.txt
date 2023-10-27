@@ -1,0 +1,233 @@
+MATRIZ
+S2
+config t
+
+vlan 100
+ name GERENCIA
+vlan 200
+ name VENTAS
+exit
+
+int range e0/0 -3
+ switchport mode access
+ switchport access vlan 100
+int range e1/0 -3
+ switchport mode access
+ switchport access vlan 200
+
+ip routing
+
+int vlan 100
+ ip add 192.168.100.1 255.255.255.128
+ no shut
+int vlan 200
+ ip add 192.168.200.1 255.255.255.224
+ no shut
+
+int e2/0
+ no switchport
+ ip add 10.10.10.6 255.255.255.252
+ no shut
+do wr
+------------------------------------------
+S1
+config t
+
+ip routing
+
+int e2/0
+ no switchport
+ ip add 10.10.10.5 255.255.255.252
+ no shut
+int e2/1
+ no switchport
+ ip add 10.10.10.1 255.255.255.252
+ no shut
+
+router eigrp 100
+ eigrp router-id 1.1.1.1
+ network 10.10.10.4 0.0.0.3
+ network 10.10.10.0 0.0.0.3
+ no auto-summary
+do wr
+------------------------------------------
+R1
+config t
+
+int e0/1
+ ip add 7.7.7.1 255.255.255.252
+ no shut
+int e0/0
+ ip add 10.10.10.2 255.255.255.252
+ no shut
+
+router eigrp 100
+ eigrp router-id 11.11.11.11
+ network 10.10.10.0 0.0.0.3
+ no auto-summary
+
+ip dhcp excluded-add 192.168.100.1 192.168.100.3
+ip dhcp excluded-add 192.168.200.1 192.168.200.3
+
+ip dhcp pool V100
+ network 192.168.100.0 255.255.255.128
+ default-router 192.168.100.1
+ dns-server 8.8.8.8
+
+ip dhcp pool V200
+ network 192.168.200.0 255.255.255.224
+ default-router 192.168.200.1
+ dns-server 8.8.8.8
+do wr
+-----------------------------------------------
+SUCURSAL
+R3-C
+config t
+
+int e0/1
+ ip add 192.168.50.1 255.255.255.0
+ no shut
+int e0/0
+ ip add 10.10.10.9 255.255.255.252
+ no shut
+
+router rip
+ version 2
+ network 192.168.50.0
+ network 10.10.10.8
+ no auto-summ
+ passive-int e0/1
+do wr
+------------------------------------------
+R2-C
+config t
+
+int e0/1
+ ip add 7.7.7.14 255.255.255.252
+ no shut
+int e0/0
+ ip add 10.10.10.10 255.255.255.252
+ no shut
+
+router rip
+ version 2
+ network 10.10.10.8
+ no auto-summ
+
+ip dhcp excluded-add 192.168.50.1 192.168.50.5
+
+ip dhcp pool SUCURSAL
+ network 192.168.50.0 255.255.255.0
+ default-router 192.168.50.1
+ dns-server 8.8.8.8
+
+do wr
+-----------------------------------------
+ISP
+PE-1
+config t
+
+ip cef
+
+ip vrf ESPE
+ rd 500:1
+ route-target both 500:1
+
+mpls label range 100 199
+
+int lo0
+ ip add 1.1.1.1 255.255.255.255
+
+int s4/0
+ ip add 7.7.7.5 255.255.255.252
+ no shut
+
+int e0/1
+ ip vrf forwarding ESPE
+ ip add 7.7.7.2 255.255.255.252
+ no shut
+
+router ospf 1
+ router-id 1.1.1.1
+ mpls ldp autoconfig
+ network 7.7.7.4 0.0.0.3 area 0
+ network 1.1.1.1 0.0.0.0 area 0
+
+router bgp 500
+ neighbor 2.2.2.2 remote-as 500
+ neighbor 2.2.2.2 update-source lo0
+ address-family vpnv4
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community extended
+ address-family ipv4 vrf ESPE 
+  neighbor 7.7.7.1 remote-as 100
+  neighbor 7.7.7.1 activate
+do wr
+
+-----------------------------------------
+PE-2
+config t
+
+ip cef
+
+ip vrf ESPE
+ rd 500:1
+ route-target both 500:1
+
+mpls label range 300 399
+
+int lo0
+ ip add 2.2.2.2 255.255.255.255
+
+int s4/1
+ ip add 7.7.7.10 255.255.255.252
+ no shut
+
+int e0/1
+ ip vrf forwarding ESPE
+ ip add 7.7.7.13 255.255.255.252
+ no shut
+
+router ospf 3
+ router-id 3.3.3.3
+ mpls ldp autoconfig
+ network 7.7.7.8 0.0.0.3 area 0
+ network 2.2.2.2 0.0.0.0 area 0
+
+router bgp 500
+ neighbor 1.1.1.1 remote-as 500
+ neighbor 1.1.1.1 update-source lo0
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ address-family ipv4 vrf ESPE 
+  neighbor 7.7.7.14 remote-as 200
+  neighbor 7.7.7.14 activate
+do wr
+-----------------------------------------
+P
+config t
+
+ip cef
+
+mpls label range 200 299
+
+int lo0
+ ip add 3.3.3.3 255.255.255.255
+
+int s4/1
+ ip add 7.7.7.9 255.255.255.252
+ no shut
+
+int s4/0
+ ip add 7.7.7.6 255.255.255.252
+ no shut
+
+router ospf 2
+ router-id 2.2.2.2
+ mpls ldp autoconfig
+ network 7.7.7.8 0.0.0.3 area 0
+ network 7.7.7.4 0.0.0.3 area 0
+ network 3.3.3.3 0.0.0.0 area 0
+
+do wr

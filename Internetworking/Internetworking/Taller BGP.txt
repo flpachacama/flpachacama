@@ -1,0 +1,152 @@
+S1
+enable
+config t
+hostname S1
+
+vlan 10
+ name GENRENCIA
+vlan 20
+ name VENTAS
+exit
+
+int range fa0/10 -19
+ switchport mode access
+ switchport access vlan 10
+int range fa0/20 -24
+ switchport mode access
+ switchport access vlan 20
+
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 77
+do wr
+-----------------
+R1
+enable 
+config t
+hostname R1
+
+int g0/0/1.10
+ encap dot1q 10
+ ip add 172.16.2.1 255.255.255.128
+int g0/0/1.20
+ encap dot1q 20
+ ip add 172.16.0.1 255.255.254.0
+int g0/0/1.77
+ encap dot1q 77 native
+int g0/0/1
+ no shut
+
+int g0/0/0
+ip add 172.16.2.129 255.255.255.252
+ no shut
+
+router ospf 1
+ router-id 1.1.1.1
+ network 172.16.2.0 0.0.0.127 area 10
+ network 172.16.0.0 0.0.1.255 area 10
+ network 172.16.2.128 0.0.0.3 area 0
+do wr
+...........................
+R2 - ABR
+enable 
+config t
+hostname R2
+
+int g0/0/0
+ ip add 172.16.2.130 255.255.255.252
+ no shut
+
+int s0/1/0
+ ip add 5.5.5.1 255.255.255.252
+ clock rate 4000000
+ no shut
+router ospf 2
+ router-id 2.2.2.2
+ network 172.16.2.128 0.0.0.3 area 0
+do wr
+
+
+
+router bgp 65000
+bgp router-id 2.2.2.2
+neighbour 5.5.5.2 remote-as 65010
+
+router bgp 65000
+ network 172.16.2.0 mask 255.255.255.128
+ network 172.16.0.0 mask 255.255.254.0
+--------------------------------
+R3 (ISP-1)
+enable 
+config t
+hostname ISP-1
+
+int s0/1/0
+ ip add 5.5.5.2 255.255.255.252
+ no shut
+
+router bgp 65010
+ bgp router-id 3.3.3.3
+ neighbor 5.5.5.1 remote-as 65000
+
+
+int g0/0/0
+ ip add 5.5.5.5 255.255.255.252
+ no shut
+
+router bgp 65010
+ neighbor 5.5.5.6 remote-as 65020
+-----------------
+R4 (ISP-2)
+enable 
+config t
+hostname ISP-2
+
+int g0/0/0
+ ip add 5.5.5.6 255.255.255.252
+ no shut
+
+int g0/0/1
+ ip add 8.8.8.1 255.255.255.192
+ no shut
+
+router bgp 65020
+ bgp router-id 4.4.4.4
+ neighbor 5.5.5.5 remote-as 65010
+ network 8.8.8.0 mask 255.255.255.192
+---------------------
+R2 hacemos el DHCP
+
+ip dhcp excluded-address 172.16.2.1 172.16.2.5
+ip dhcp excluded-address 172.16.0.1 172.16.0.5
+
+ip dhcp pool GERENCIA
+ network 172.16.2.0 255.255.255.128
+ default-router 172.16.2.1
+ dns-server 8.8.8.8
+ip dhcp pool VENTAS
+ network 172.16.0.0 255.255.254.0
+ default-router 172.16.0.1
+ dns-server 8.8.8.8
+
+
+---------------
+EN R1 el helper address
+
+int g0/0/1.10 
+ ip helper-address 172.16.2.130
+int g0/0/1.20 
+ ip helper-address 172.16.2.130
+do wr
+---------------------
+R2 - ABR
+
+router bgp 65000
+ network 5.5.5.0 mask 255.255.255.252
+----------------
+R2 -ABR (HACEMOS LA RUTA POR DEFECTO)
+
+ip route 0.0.0.0 0.0.0.0 s0/1/0
+
+router ospf 2
+default-information originate

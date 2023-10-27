@@ -1,0 +1,154 @@
+--------------------S1---------------
+config t
+
+vlan 100
+ name DIRECCIÓN
+vlan 200
+ name TESORERIA
+
+int range e0/0 -3
+ switchport mode access
+ switchport access vlan 100
+int range e1/0 -3
+ switchport mode access
+ switchport access vlan 200
+
+int e2/0
+ switchport trunk encap dot1q 
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+do wr 
+---------------------------------
+R1
+
+config t
+
+int e2/0.100
+encap dot1q 100
+ip add 192.168.100.1 255.255.255.128
+ip helper-add 10.10.10.6
+int e2/0.200
+encap dot1q 200
+ip add 192.168.200.1 255.255.255.224
+ip helper-add 10.10.10.6
+int e2/0.77
+encap dot1q 77 native
+int e2/0
+no shut
+int e2/1
+ip add 10.10.10.1 255.255.255.252
+no shut
+
+router ospf 1
+router-id 1.1.1.1
+network 192.168.100.0 0.0.0.127 area 100
+network 192.168.200.0 0.0.0.31 area 100
+network 10.10.10.0 0.0.0.3 area 100 
+passive-int e2/0.100
+passive-int e2/0.200 
+
+do wr
+---------------------------------------
+R2
+
+config t
+
+int e2/1
+ ip add 10.10.10.2 255.255.255.252
+ no shut
+int e3/0
+ ip add 10.10.10.5 255.255.255.252
+ no shut
+
+
+router ospf 2
+ router-id 2.2.2.2
+ network 10.10.10.0 0.0.0.3 area 100
+ network 10.10.10.4 0.0.0.3 area 0
+do wr
+---------------------------------------
+R3
+
+config t
+
+int e3/0
+ ip add 10.10.10.6 255.255.255.252
+ no shut
+int s4/2
+ ip add 7.7.7.1 255.255.255.252
+ no shut
+
+ip route 0.0.0.0 0.0.0.0 s4/2
+
+router ospf 3
+ router-id 3.3.3.3
+ network 10.10.10.4 0.0.0.3 area 0
+ default-information originate
+
+router bgp 1000
+ bgp router-id 4.4.4.4
+ neighbor 7.7.7.2 remote-as 2000
+ network 7.7.7.0 mask 255.255.255.252
+
+ip dhcp excluded-address 192.168.100.1 192.168.100.2
+ip dhcp excluded-address 192.168.200.1 192.168.200.2
+
+ip dhcp pool V100
+ network 192.168.100.0 255.255.255.128
+ default-router 192.168.100.1
+ dns-server 8.8.8.8
+ip dhcp pool V200
+ network 192.168.200.0 255.255.255.224
+ default-router 192.168.200.1
+ dns-server 8.8.8.8
+do wr
+---------------------------------------
+R4
+
+config t
+
+int s4/2
+ ip add 7.7.7.2 255.255.255.252
+ no shut
+int s4/3
+ ip add 7.7.7.5 255.255.255.252
+ no shut
+
+router bgp 2000
+ bgp router-id 5.5.5.5
+ neighbor 7.7.7.6 remote-as 3000
+ neighbor 7.7.7.1 remote-as 1000
+do wr
+---------------------------------------
+R5
+
+config t
+
+int s4/3
+ ip add 7.7.7.6 255.255.255.252
+ no shut
+int e0/0
+ ip add 172.50.100.1 255.255.255.0
+ no shut
+
+router bgp 3000
+ bgp router-id 6.6.6.6
+ neighbor 7.7.7.5 remote-as 2000
+ network 172.50.100.0 mask 255.255.255.0
+do wr
+-------------------------------------
+PAT (NAT Sobrecarga)
+
+config t
+
+access-list 10 permit 192.168.100.0 0.0.0.127
+access-list 10 permit 192.168.200.0 0.0.0.31
+
+ip nat inside source list 10 interface s4/2 overload
+
+int e2/1
+ ip nat inside
+
+int s4/2
+ ip nat outside

@@ -1,0 +1,189 @@
+--------------------S1---------------
+enable
+config t
+hostname S1
+
+vlan 10
+ name VENTAS
+vlan 20
+ name MARKETING
+
+int range fa0/10 -19
+ switchport mode access
+ switchport access vlan 10
+int range fa0/20 -24
+ switchport mode access
+ switchport access vlan 20
+
+int range fa0/1, f0/5
+ shut
+ channel-group 5 mode active
+int Po5
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+int g0/1
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+do wr 
+--------------------S2---------------
+enable
+config t
+hostname S2
+
+vlan 10
+ name VENTAS
+vlan20
+ name MARKETING
+
+int range fa0/10 -19
+ switchport mode access
+ switchport access vlan 10
+int range fa0/20 -24
+ switchport mode access
+ switchport access vlan 20
+
+int range fa0/1, f0/5
+ shut
+ channel-group 5 mode active
+int Po5
+ switchport mode trunk
+ switchport trunk native vlan 77
+
+do wr 
+--------------------R1---------------
+enable
+config t
+hostname R1
+
+int g0/0/1.10
+ encap dot1q 10
+ ip add 172.16.10.1 255.255.255.240
+int g0/0/1.20
+ encap dot1q 20
+ ip add 172.16.20.1 255.255.255.128
+int g0/0/1.77
+ encap dot1q 77 native
+int g0/0/1
+ no shut
+
+int g0/0/0
+ ip add 192.168.10.9 255.255.255.252
+ no shut
+
+router ospf 1
+ router-id 1.1.1.1
+ network 172.16.10.0 0.0.0.15 area 10
+ network 172.16.20.0 0.0.0.127 area 10
+ network 192.168.10.9 0.0.0.0 area 10
+ passive-interface g0/0/1.10
+ passive-interface g0/0/1.20
+
+
+--------------------R2---------------
+enable
+config t
+hostname R1
+
+int g0/0/1
+ ip address 192.168.10.10 255.255.255.252
+ no shut
+
+int g0/0/0
+ ip add 192.168.10.1 255.255.255.252
+ no shut
+
+router ospf 2
+ router-id 2.2.2.2
+ network 192.168.10.9 0.0.0.0 area 10
+ network 192.168.10.0 0.0.0.3 area 0
+
+do wr
+--------------------R3---------------
+enable
+config t
+hostname R3
+
+int g0/0/1
+ ip address 192.168.10.5 255.255.255.252
+ no shut
+
+int g0/0/0
+ ip add 192.168.10.2 255.255.255.252
+ no shut
+
+router ospf 3
+ router-id 3.3.3.3
+ network 192.168.10.4 0.0.0.3 area 20
+ network 192.168.10.0 0.0.0.3 area 0
+
+do wr
+--------------------R4---------------
+enable
+config t
+hostname R4
+
+int g0/0/1
+ ip address 192.168.10.6 255.255.255.252
+ no shut
+
+int g0/0/0
+ ip add 5.5.5.1 255.255.255.252
+ no shut
+
+ip route 0.0.0.0 0.0.0.0 5.5.5.2
+
+router ospf 4
+ router-id 4.4.4.4
+ network 192.168.10.4 0.0.0.3 area 20
+ default-information originate
+do wr
+-----------------------ISP--------------
+enable
+config t
+hostname ISPF
+
+int g0/0/1
+ ip address 8.8.8.1 255.255.255.0
+ no shut
+
+int g0/0/0
+ ip add 5.5.5.2 255.255.255.252
+ no shut
+
+ip route 0.0.0.0 0.0.0.0 5.5.5.1
+
+do wr
+-----------------DHCP-------------------
+-------R4--------
+enable
+config t
+
+ip dhcp excluded-address 172.16.10.1 172.16.10.3
+ip dhcp excluded-address 172.16.20.1 172.16.4.3
+
+ip dhcp pool VENTAS
+ network 172.16.10.0 255.255.255.240
+ default-router 172.16.10.1
+ dns-server 8.8.8.8
+
+ip dhcp pool MARKETING
+ network 172.16.20.0 255.255.255.128
+ default-router 172.16.20.1
+ dns-server 8.8.8.8
+ exit
+
+do wr
+--------R1--------
+
+enable
+config t
+int g0/0/1.10
+ ip helper-address 192.168.10.6
+int g0/0/1.20
+ ip helper-address 192.168.10.6
+
+do wr
+
+do wr

@@ -1,0 +1,143 @@
+MATRIZ
+--------------S2-----------------------
+config t
+
+vlan 100 
+ name GERENCIA
+vlan 200
+ name VENTAS
+exit
+
+int range e0/0 -3
+ switchport mode access
+ switchport access vlan 100
+int range e1/0 -3
+ switchport mode access
+ switchport access vlan 200
+
+ip routing
+int vlan 100
+ ip add 192.168.100.1 255.255.255.128
+ ip helper-add 10.10.10.2
+ no shut
+int vlan 200
+ ip add 192.168.200.1 255.255.255.224
+ ip helper-add 10.10.10.2
+ no shut
+
+int e2/0
+ no switchport
+ ip add 10.10.10.6 255.255.255.252
+ no shut
+
+router eigrp 100
+ eigrp router-id 2.2.2.2
+ network 10.10.10.4 0.0.0.3
+ network 192.168.100.0 0.0.0.127
+ network 192.168.200.0 0.0.0.31
+ no auto
+do wr
+--------------S1-----------------------
+config t
+
+ip routing
+
+int e2/0
+ no switchport
+ ip add 10.10.10.5 255.255.255.252
+ no shut
+int e2/1
+ no switchport
+ ip add 10.10.10.1 255.255.255.252
+ no shut
+
+router eigrp 100
+ eigrp router-id 1.1.1.1
+ network 10.10.10.4 0.0.0.3
+ network 10.10.10.0 0.0.0.3
+ no auto-summary
+do wr
+------------------R1------------------
+
+config t
+
+int e0/1
+ ip add 7.7.7.1 255.255.255.252
+ no shut
+int e0/0
+ ip add 10.10.10.2 255.255.255.252
+ no shut
+
+router eigrp 100
+ eigrp router-id 3.3.3.3
+ network 10.10.10.0 0.0.0.3
+ no auto-summary
+
+ip dhcp excluded-add 192.168.100.1 192.168.100.3
+ip dhcp excluded-add 192.168.200.1 192.168.200.3
+
+
+ip dhcp pool v100
+ network 192.168.100.0 255.255.255.128
+ default-router 192.168.100.1
+ dns-server 8.8.8.8
+
+ip dhcp pool v200
+ network 192.168.200.0 255.255.255.224
+ default-router 192.168.200.1
+ dns-server 8.8.8.8
+
+do wr
+--------------R2---------------------
+config t
+
+int e0/1
+ ip add 7.7.7.2 255.255.255.252
+ no shut
+int e0/0
+ ip add 10.10.10.9 255.255.255.252
+ no shut 
+
+router rip
+ version 2
+ network 10.10.10.8
+ no auto-summ
+
+ip dhcp excluded-add 192.168.50.1 192.168.50.5
+
+ip dhcp pool SUCURSAL
+ network 192.168.50.0 255.255.255.0
+ default-router 192.168.50.1
+ dns-server 8.8.8.8
+ip dhcp pool SUCURSAL2
+ network 192.168.50.0 255.255.255.0
+ default-router 192.168.50.2
+ dns-server 8.8.8.8
+
+do wr
+----------
+R3
+SUCURSAL
+
+config t
+
+int e0/1
+ ip add 192.168.50.1 255.255.255.0
+ ip helper-add 10.10.10.9
+ no shut
+int e0/2
+ ip add 192.168.50.2 255.255.255.0
+ ip helper-add 10.10.10.9
+ no shut
+int e0/0
+ ip add 10.10.10.10 255.255.255.252
+ no shut
+
+router rip
+ version 2
+ network 192.168.50.0
+ network 10.10.10.8
+ no auto-summ
+ passive-int e0/1
+ passive-int e0/2
+do wr
