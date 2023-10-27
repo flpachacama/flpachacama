@@ -1,0 +1,213 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contenedor {
+    width: 600px;
+    height: 550px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 1px solid;
+    border-color: black;
+}
+
+.menu{
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    height: calc(100% - 20px);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.menu button{
+    color: white;
+    background-color: black;
+    width: calc(100% - 10px);
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+}
+
+.menu button:hover{
+    background-color: rgb(229, 233, 235,0.4);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.div_if{
+    display: flex;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    height: calc(100% - 20px);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.resultado{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-text{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 1px white;
+}
+
+#botones_grupo button{
+    background-color:rgba(255, 255, 255, 0.5); 
+    border-radius: 50%;
+    padding: 10px;
+    margin-left: 15px;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+#botones_grupo button:hover{
+    background-color: rgb(169, 240, 184);
+}
+
+.div_if .volver{
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 450px;
+}
+
+.div_if .volver:hover{
+    background-color: rgb(108, 188, 241);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.div_while{
+    display: flex;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    height: calc(100% - 20px);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.div_while #numero_adivinar{
+    width: 150px;
+    height: 160px;
+    border: 1px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 80px;
+    color: #fff;
+    background-color: rgba(46, 45, 45, 0.9);
+    border-radius: 10px;
+}
+
+.div_while input{
+    height: 45px;
+    
+}
+
+
+
+.div_while .enviar{
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    
+}
+.div_while #texto{
+    font-size: 18px;
+    text-shadow: 2px 2px 1px white;
+}
+
+.div_while .enviar:hover{
+    background-color: rgb(140, 231, 160);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.div_while .volver{
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 450px;
+}
+
+.div_while .volver:hover{
+    background-color: rgb(108, 188, 241);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.div_for .tablero {
+    display: flex;
+    flex-wrap:wrap;
+    width: 500px;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.div_for .casilla {
+    margin-right: 15px;
+    margin-bottom: 15px;
+    width: 90px;
+    height: 90px;
+    border: 1px solid #fdfdfd;
+    cursor: pointer;
+}
+
+.div_for .casilla:hover {
+    background-color: rgb(140, 231, 160);
+}
+
+.div_for{
+    display: flex;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    height: calc(100% - 20px);
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.div_for .volver{
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    margin-left: 450px;
+}
+
+.div_for .volver:hover{
+    background-color: rgb(108, 188, 241);
+    cursor: pointer;
+    transition: 0.2s;
+}

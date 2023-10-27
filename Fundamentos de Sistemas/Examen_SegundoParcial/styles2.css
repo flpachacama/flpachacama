@@ -1,0 +1,53 @@
+h1{
+    text-align: center;
+    color: rgb(230, 214, 214,0.8);
+}
+.container {
+    height: 50%;
+    width: 100%;
+    position: relative;
+}
+.container .container-top .container-below {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+}
+fieldset{
+    border-color: transparent;
+}
+#fieldset1{
+    float: left;
+    width: 47.5%;
+    height: 500px;
+    text-align: center;
+    font-size: 18px;
+    background-color: #ffffff93;
+    margin: 3px;
+}
+p{
+    text-align: justify;
+}
+#fieldset2{
+    float: left;
+    width: 47.5%;
+    height: 500px;
+    text-align: center;
+    font-size: 18px;
+    background-color: #ffffff93;
+    margin: 3px;
+}
+h3{
+    text-align: left;
+}
+p{
+    text-align: justify;
+}
+#fieldsetbutton{
+    text-align: center;
+}
+button{
+    text-align: center;
+}

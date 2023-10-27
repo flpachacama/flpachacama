@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <title>Aplicación Carrito</title>
+        <style>
+            body{
+                background-color:aliceblue;
+            }
+        </style>
+    </head>
+    <body>
+        <img class="carrito-icon" src="Imagenes/carrito-de-compras.png" alt="Carrito de Compras" onclick="mostrarCarrito()">
+
+        <div class="carrito-modal" id="carritoModal">
+            <h2>Carrito de Compras</h2>
+            <table class="carrito-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="carritoContenido">
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><strong>Total a Pagar:</strong></td>
+                        <td id="totalPagar">0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <span class="cerrar-carrito" onclick="cerrarCarrito()">Cerrar</span>
+        </div>
+
+        <div class="container">
+            <div class="container-top">
+            <fieldset>
+                <h1>Accesorios Electrónicos</h1>
+                    <fieldset id="fieldset1">
+                        <h2>Apple AirPods (Segunda generación)</h2>
+                        <img src="Imagenes/AirPods_2S.jpeg" alt="Producto 1" height="200px" width="200px">
+                        <p id="precio">
+                            Desde 159,10 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Apple AirPods (Segunda generación)', 159.10)">Agregar al Carrito</button>
+                    </fieldset>
+                    <fieldset id="fieldset2">
+                        <h2>Apple AirPods Pro (Segunda generación)</h2>
+                        <img src="Imagenes/AirPods_PRO_2S.jpeg" alt="Producto 2" height="200px" width="200px">
+                        <p id="precio">
+                            Dede 299,00 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Apple AirPods Pro (Segunda generación)', 299.00)">Agregar al Carrito</button>
+                    </fieldset>
+                    <fieldset id="fieldset3">
+                        <h2>Apple AirPods Pro (Tercera generación)</h2>
+                        <img src="Imagenes/AirPods_3G.jpg" alt="Producto 3" height="200px" width="200px">
+                        <p id="precio">
+                            Desde 209,00 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Apple AirPods Pro (Tercera generación)', 209.00)">Agregar al Carrito</button>
+                    </fieldset>
+                    <fieldset id="fieldset4">
+                        <h2>Cargador MagSafe</h2>
+                        <img src="Imagenes/Magsafe.jpg" alt="Producto 4" height="200px" width="200px">
+                        <p id="precio">
+                            Desde 49,00 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Cargador MagSafe', 49.00)">Agregar al Carrito</button>
+                    </fieldset>
+                    <fieldset id="fieldset5">
+                        <h2>Funda de silicona con Magsafe</h2>
+                        <img src="Imagenes/Funda_Silicona2.webp" alt="Producto 5" height="200px" width="200px">
+                        <p id="precio">
+                            Desde 59,00 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Funda de silicona con Magsafe', 59.00)">Agregar al Carrito</button>
+                    </fieldset>
+                    <fieldset id="fieldset6">
+                        <h2>Apple Watch Series 8</h2>
+                        <img src="Imagenes/AppleWatch.webp" alt="Producto 6" height="200px" width="200px">
+                        <p id="precio">
+                            Desde 502,00 €
+                        </p>
+                        <button onclick="agregarAlCarrito('Apple Watch Series 8', 502.00)">Agregar al Carrito</button>
+                    </fieldset>
+            </div>
+        </div>
+        <script src="app.js"></script>
+    </body>
+</html>

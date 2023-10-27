@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <title>Prueba Practica</title>
+        <style>
+            body {
+                background-image: url(imagenes/Fondo2.jpg);
+            }
+        </style>
+    </head>
+    <body>
+        <ul>
+            <li class="logo">
+                <img src="imagenes/Logo_avianca.avif" width="100" alt="Logo"></a>
+            </li>        
+            <li class="logo">
+                <img src="imagenes/Logo_mundo2.jpg" width="50" alt="Logo"></a>
+            </li>
+            <li><a href="#">Ecuador-USD-Español</a></li>
+            <li class="logo">
+                <img src="imagenes/Logo_persona.png" width="65" alt="Logo"></a>
+            </li>
+            <li><a href="#">My Avianca</a></li>
+        </ul>
+        <form action="datos.php" method="post" name="FORMULARIO">
+            <div class="container">
+                <div class="fieldset-container1">
+                    <fieldset>
+                        <label for="Datos_Personales">
+                            <label > Paso 1: Datos Personales</label>
+                            <label for="Nombre">Nombre: <input type="text" name="Nombre" id="Nombre" ><br></label>
+                            <label for="Email">Email: <input type="email" name="Email" id="Email" ><br></label>
+                            <label for="Teléfono">Teléfono: <input type="text" name="Telefono" id="Telefono"></label>
+                        </label>
+                        <label for="Direccion_Entrega">
+                            <label > Paso 2: Dirección de entrega</label>
+                            <label for="Dirección">Dirección: <input type="text" name="Dirección" id="Dirección"><br></label>
+                            <label for="Codigo_postal">Código Postal: <input type="number" name="Codigo_postal" id="Codigo_postal"><br></label>
+                            <label for="Pais">Páis: <input type="text" name="Pais" id="Pais"></label>
+                        </label>
+                        <label for="Detalles_Tarjeta">
+                            <label > Paso 3: Detalles de Tarjeta</label>
+                            <label for="Tarjetas">
+                            <input id="Tipo_de_tarjeta" type="radio" name="Tipo_de_tarjeta" class="inline" />Visa</label> 
+                            <input id="Tipo_de_tarjeta" type="radio" name="Tipo_de_tarjeta" class="inline" />AmEx</label> 
+                            <input id="Tipo_de_tarjeta" type="radio" name="Tipo_de_tarjeta" class="inline" />Mastercard</label>
+                            </label>
+                            <label for="Numero_tarjeta">Número de tarjeta: <input type="text" name="Numero_tarjeta" id="Numero_tarjeta"></label><br>
+                            <label for="Codigo_Seguridad">Código de seguridad: <input type="text" name="Codigo_Seguridad" id="Codigo_Seguridad"></label><br>
+                            <label for="Nombre_Tarjeta">Nombre en la Tarjeta: <input type="text" name="Nombre_Tarjeta" id="Pais"></label>
+                        </label>
+                    </fieldset>
+                </div>
+                <div>
+                    <h1>Vuelos baratos desde Quito </h1> <br>
+                    <h3>Apresurate y compra hasta el 5 de junio del 2023</h3><br>
+                    <img src="Imagenes/Bogota.jpg" width="400" height="300" alt="No se encuentra la imagen">
+                    <img src="Imagenes/Cancun.jpg" width="400" height="300" alt="No se encuentra la imagen">
+                    <img src="Imagenes/Aruba.jpg" width="400" height="300" alt="No se encuentra la imagen">
+                </div>
+            <button type="Submit"> Enviar</button> 
+        </form>
+
+    </body>
+</html>

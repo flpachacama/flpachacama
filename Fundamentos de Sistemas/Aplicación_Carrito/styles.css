@@ -1,0 +1,105 @@
+.carrito-icon {
+    cursor: pointer;
+    height: 30px;
+}
+.carrito-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 9999;
+}
+.carrito-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.carrito-table th,
+.carrito-table td {
+    padding: 10px;
+    text-align: left;
+}
+.cerrar-carrito {
+    float: right;
+    cursor: pointer;
+}
+h1{
+    text-align: center;
+    color: black;
+    background-color:  white;
+    width: 98.7%;
+}
+h2{
+    text-align: center;
+    font-size: 18px;
+}
+.container {
+    height: 50%;
+    width: 100%;
+    position: relative;
+}
+fieldset{
+    border-color: transparent;
+}
+
+#fieldset1{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color: white;
+    margin: 3px;
+}
+#precio{
+    text-align: center;
+}
+#fieldset2{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color:  white;
+    margin: 3px;
+}
+#fieldset3{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color:  white;
+    margin: 3px;
+}
+#fieldset4{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color:  white;
+    margin: 3px;
+}
+#fieldset5{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color: white;
+    margin: 3px;
+}
+#fieldset6{
+    float: left;
+    width: 30.5%;
+    height: 350px;
+    text-align: center;
+    font-size: 18px;
+    background-color: white;
+    margin: 3px;
+}

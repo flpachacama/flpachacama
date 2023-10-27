@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/scripts.js"></script>
+    <script src="js/while.js"></script>
+    <script src="js/for.js"></script>
+    <title>Fundamentos Web</title>
+    <style>
+        body {
+            background-image: url(img/fondo.jpg);
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor">
+
+        <!--Menu-->
+
+        <div class="menu"  id="menu" style="display: ;">
+            <h1>Elija una opción</h1>
+            <button onclick="muestra_divIf()">Piedra papel o tijera</button>
+            
+            <button onclick="muestra_divwhile()">Adivina el Número</button>
+            
+            <button onclick="muestra_divfor()">Encuentra el Tesoro</button>
+        </div>
+
+        <!--Demostracion del uso de If-->
+        <div class="div_if" id="div_if" style="display: none;">
+            <h1>Piedra Papel o Tijera</h1>
+            <div id="1" class="resultado">
+                <img id="img_maquina" src="img/if/piedra.png" width="100px">
+                <div id="start-text">
+                    Escoje una opción
+                </div>
+                <img id="img_usuario" src="img/if/piedra.png" width="100px">
+    
+            </div>
+            <div id="botones_grupo">
+                <button id="papel" type="button">
+                    <img src="img/if/papel.png" width="100px">
+    
+                </button>
+                <button id="piedra" type="button">
+                    <img src="img/if/piedra.png" width="100px">
+                </button>
+                <button id="tijera" type="button">
+                    <img src="img/if/tijera.png" width="100px">
+                </button>
+            </div>
+            <button class="volver" onclick="muestra_menu()">Atrás</button>
+        </div>
+
+        <!--Demostracion de While-->
+        <div class="div_while" id="div_while" style="display: none;">
+            <h1>Adivina el Número</h1>
+            <h4>Adivina el número entre 1 y 10</h4>
+            <label for="numero" >Ingresa un numero: </label>
+            <input type="text" id="numero"  required>
+            <button type="button" id="adivinar" class="enviar" onclick="jugar()">Adivina</button>
+            <div id="texto">
+                Elige tu número
+            </div>
+           
+            <div id="numero_adivinar">
+                ?
+            </div>
+            <button class="volver" onclick="muestra_menu()">Atrás</button>
+        </div>
+
+        <div class="div_for" id="div_for" style="display: none;">
+            <h1>Encuentra el Tesoro</h1>
+            <p>Haz clic en las casillas para encontrar el tesoro.</p>
+        <div class="tablero" id="tablero">
+        <div class="casilla" id="1" onclick="verificarTesoro(0)"></div>
+        <div class="casilla" id="2" onclick="verificarTesoro(1)"></div>
+        <div class="casilla" id="3" onclick="verificarTesoro(2)"></div>
+        <div class="casilla" id="4" onclick="verificarTesoro(3)"></div>
+        <div class="casilla" id="5" onclick="verificarTesoro(4)"></div>
+        <div class="casilla" id="6" onclick="verificarTesoro(5)"></div>
+        <div class="casilla" id="7" onclick="verificarTesoro(6)"></div>
+        <div class="casilla" id="8" onclick="verificarTesoro(7)"></div>
+        <div class="casilla" id="9" onclick="verificarTesoro(8)"></div>
+        <div class="casilla" id="10" onclick="verificarTesoro(9)"></div>
+        <div class="casilla" id="11" onclick="verificarTesoro(10)"></div>
+        <div class="casilla" id="12" onclick="verificarTesoro(11)"></div>
+        
+        </div>
+        <p id="resultado1"></p>
+        <button class="volver" onclick="muestra_menu()">Atrás</button>
+        </div>
+    </div>
+        <script src="js/while.js"></script>
+        <script src="js/for.js"></script>
+        <script src="js/if.js"></script>
+</body>
+</html>
